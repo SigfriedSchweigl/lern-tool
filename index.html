@@ -127,10 +127,6 @@
       line-height: 1.9;
     }
 
-    .hidden {
-      display: none;
-    }
-
     code {
       background: #eff6ff;
       padding: 2px 5px;
@@ -198,7 +194,7 @@
         <button onclick="evaluateLearning()">Auswertung anzeigen</button>
       </div>
 
-      <div id="resultBox" class="result-box hidden"></div>
+      <div id="resultBox" class="result-box" style="display:none;"></div>
     </div>
   </div>
 
@@ -328,13 +324,8 @@
     }
 
     function getSelectedRating() {
-      const ratings = document.getElementsByName("selfRating");
-      for (let i = 0; i < ratings.length; i++) {
-        if (ratings[i].checked) {
-          return ratings[i].value;
-        }
-      }
-      return null;
+      const checked = document.querySelector('input[name="selfRating"]:checked');
+      return checked ? checked.value : null;
     }
 
     function getRatingText(value) {
@@ -356,13 +347,13 @@
       const rating = getSelectedRating();
       const reflection = document.getElementById("reflection").value.trim();
       const resultBox = document.getElementById("resultBox");
-
-      resultBox.classList.remove("hidden");
+      const taskTitle = document.getElementById("taskSelect").options[
+        document.getElementById("taskSelect").selectedIndex
+      ].text;
 
       let feedback = "";
-
       feedback += "<h2>Auswertung</h2>";
-      feedback += "<p><strong>Gewählte Aufgabe:</strong> " + document.getElementById("taskSelect").selectedOptions[0].text + "</p>";
+      feedback += "<p><strong>Gewählte Aufgabe:</strong> " + taskTitle + "</p>";
       feedback += "<p><strong>Genutzte Hilfestufen:</strong> " + usedHints + " von 5</p>";
       feedback += "<p><strong>Selbsteinschätzung:</strong> " + getRatingText(rating) + "</p>";
 
@@ -381,6 +372,8 @@
       }
 
       resultBox.innerHTML = feedback;
+      resultBox.style.display = "block";
+      resultBox.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function clearRating() {
@@ -392,8 +385,8 @@
 
     function hideResult() {
       const resultBox = document.getElementById("resultBox");
-      resultBox.classList.add("hidden");
       resultBox.innerHTML = "";
+      resultBox.style.display = "none";
     }
 
     renderTask();
