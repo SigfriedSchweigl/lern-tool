@@ -10,10 +10,11 @@
       background: #f4f6fb;
       margin: 0;
       padding: 40px 20px;
+      color: #1e293b;
     }
 
     .container {
-      max-width: 900px;
+      max-width: 980px;
       margin: 0 auto;
     }
 
@@ -26,10 +27,27 @@
 
     h1 {
       margin-top: 0;
-      color: #1e293b;
+      margin-bottom: 10px;
     }
 
-    .task {
+    .intro {
+      margin-bottom: 24px;
+      color: #475569;
+    }
+
+    .selector {
+      margin-bottom: 24px;
+    }
+
+    select {
+      padding: 10px 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      min-width: 280px;
+    }
+
+    .task-box {
       background: #eef4ff;
       border-left: 5px solid #2563eb;
       padding: 16px;
@@ -62,6 +80,7 @@
       padding: 14px 16px;
       border-radius: 8px;
       margin-top: 14px;
+      line-height: 1.6;
     }
 
     .hint {
@@ -89,56 +108,54 @@
       font-size: 14px;
       color: #475569;
     }
+
+    .example {
+      margin-top: 18px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      font-size: 14px;
+    }
+
+    code {
+      background: #eff6ff;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
       <h1>Java Lern-Tool</h1>
-
-      <div class="task">
-        <strong>Aufgabe:</strong><br>
-        Schreibe eine Methode <code>findMax(int[] numbers)</code>, die das größte Element in einem Array zurückgibt.
+      <div class="intro">
+        Wähle eine Aufgabe aus und arbeite dich mit <strong>Nächster Schritt</strong> durch die Hilfestufen.
       </div>
+
+      <div class="selector">
+        <label for="taskSelect"><strong>Aufgabe wählen:</strong></label><br><br>
+        <select id="taskSelect" onchange="changeTask()">
+          <option value="max">1. Maximum in einem Array finden</option>
+          <option value="even">2. Prüfen, ob eine Zahl gerade ist</option>
+          <option value="sum">3. Summe eines Arrays berechnen</option>
+        </select>
+      </div>
+
+      <div class="task-box" id="taskDescription"></div>
 
       <div class="controls">
         <button onclick="nextStep()">Nächster Schritt</button>
         <button onclick="resetSteps()">Zurücksetzen</button>
       </div>
 
-      <div id="step1" class="step hint">
-        <strong>Denkhinweis:</strong><br>
-        Überlege, mit welchem Wert du den Vergleich beginnen kannst.
-      </div>
+      <div id="step1" class="step hint"></div>
+      <div id="step2" class="step strategy"></div>
+      <div id="step3" class="step code"></div>
+      <div id="step4" class="step code"></div>
+      <div id="step5" class="step solution"></div>
 
-      <div id="step2" class="step strategy">
-        <strong>Strategie:</strong><br>
-        Speichere zuerst ein vorläufiges Maximum und gehe dann mit einer Schleife durch die restlichen Elemente.
-      </div>
-
-      <div id="step3" class="step code">
-int max = numbers[0];
-      </div>
-
-      <div id="step4" class="step code">
-for (int i = 1; i < numbers.length; i++) {
-    if (numbers[i] > max) {
-        max = numbers[i];
-    }
-}
-      </div>
-
-      <div id="step5" class="step solution">
-public static int findMax(int[] numbers) {
-    int max = numbers[0];
-    for (int i = 1; i < numbers.length; i++) {
-        if (numbers[i] > max) {
-            max = numbers[i];
-        }
-    }
-    return max;
-}
-      </div>
+      <div class="example" id="exampleBox"></div>
 
       <div class="progress" id="progressText">
         Aktueller Stand: 0 von 5 Hilfestufen sichtbar
@@ -147,8 +164,98 @@ public static int findMax(int[] numbers) {
   </div>
 
   <script>
+    const tasks = {
+      max: {
+        description: "<strong>Aufgabe:</strong><br>Schreibe eine Methode <code>findMax(int[] numbers)</code>, die das größte Element in einem Array zurückgibt.",
+        example: "<strong>Beispiel:</strong> Für <code>{3, 8, 2, 5}</code> soll <code>8</code> zurückgegeben werden.",
+        steps: [
+          "<strong>Denkhinweis:</strong><br>Überlege, mit welchem Wert du den Vergleich beginnen kannst.",
+          "<strong>Strategie:</strong><br>Speichere zuerst ein vorläufiges Maximum und gehe dann mit einer Schleife durch die restlichen Elemente.",
+          `int max = numbers[0];`,
+          `for (int i = 1; i < numbers.length; i++) {
+    if (numbers[i] > max) {
+        max = numbers[i];
+    }
+}`,
+          `public static int findMax(int[] numbers) {
+    int max = numbers[0];
+    for (int i = 1; i < numbers.length; i++) {
+        if (numbers[i] > max) {
+            max = numbers[i];
+        }
+    }
+    return max;
+}`
+        ]
+      },
+
+      even: {
+        description: "<strong>Aufgabe:</strong><br>Schreibe eine Methode <code>isEven(int number)</code>, die prüft, ob eine Zahl gerade ist.",
+        example: "<strong>Beispiel:</strong> Für <code>6</code> soll <code>true</code>, für <code>7</code> soll <code>false</code> zurückgegeben werden.",
+        steps: [
+          "<strong>Denkhinweis:</strong><br>Wie kannst du erkennen, ob bei einer Division durch 2 ein Rest bleibt?",
+          "<strong>Strategie:</strong><br>Nutze den Modulo-Operator <code>%</code>. Eine gerade Zahl hat bei Division durch 2 den Rest 0.",
+          `number % 2 == 0`,
+          `if (number % 2 == 0) {
+    return true;
+} else {
+    return false;
+}`,
+          `public static boolean isEven(int number) {
+    return number % 2 == 0;
+}`
+        ]
+      },
+
+      sum: {
+        description: "<strong>Aufgabe:</strong><br>Schreibe eine Methode <code>sumArray(int[] numbers)</code>, die die Summe aller Elemente eines Arrays berechnet.",
+        example: "<strong>Beispiel:</strong> Für <code>{4, 1, 3}</code> soll <code>8</code> zurückgegeben werden.",
+        steps: [
+          "<strong>Denkhinweis:</strong><br>Du brauchst eine Variable, in der du Zwischenergebnisse speicherst.",
+          "<strong>Strategie:</strong><br>Starte mit einer Summe von 0 und addiere dann in einer Schleife jedes Element dazu.",
+          `int sum = 0;`,
+          `for (int i = 0; i < numbers.length; i++) {
+    sum += numbers[i];
+}`,
+          `public static int sumArray(int[] numbers) {
+    int sum = 0;
+    for (int i = 0; i < numbers.length; i++) {
+        sum += numbers[i];
+    }
+    return sum;
+}`
+        ]
+      }
+    };
+
+    let currentTask = "max";
     let currentStep = 0;
     const maxSteps = 5;
+
+    function renderTask() {
+      document.getElementById("taskDescription").innerHTML = tasks[currentTask].description;
+      document.getElementById("exampleBox").innerHTML = tasks[currentTask].example;
+
+      for (let i = 1; i <= maxSteps; i++) {
+        const stepElement = document.getElementById("step" + i);
+        stepElement.innerHTML = tasks[currentTask].steps[i - 1];
+        stepElement.style.display = "none";
+      }
+
+      document.getElementById("step1").className = "step hint";
+      document.getElementById("step2").className = "step strategy";
+      document.getElementById("step3").className = "step code";
+      document.getElementById("step4").className = "step code";
+      document.getElementById("step5").className = "step solution";
+
+      currentStep = 0;
+      updateProgress();
+    }
+
+    function changeTask() {
+      currentTask = document.getElementById("taskSelect").value;
+      renderTask();
+    }
 
     function nextStep() {
       if (currentStep < maxSteps) {
@@ -170,6 +277,8 @@ public static int findMax(int[] numbers) {
       document.getElementById("progressText").textContent =
         "Aktueller Stand: " + currentStep + " von 5 Hilfestufen sichtbar";
     }
+
+    renderTask();
   </script>
 </body>
 </html>
