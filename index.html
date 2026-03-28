@@ -14,7 +14,7 @@
     }
 
     .container {
-      max-width: 980px;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
@@ -25,9 +25,8 @@
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
     }
 
-    h1 {
+    h1, h2 {
       margin-top: 0;
-      margin-bottom: 10px;
     }
 
     .intro {
@@ -39,12 +38,18 @@
       margin-bottom: 24px;
     }
 
-    select {
+    select, textarea {
       padding: 10px 12px;
       font-size: 15px;
       border-radius: 8px;
       border: 1px solid #cbd5e1;
-      min-width: 280px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
     }
 
     .task-box {
@@ -103,25 +108,38 @@
       white-space: pre-wrap;
     }
 
+    .example, .evaluation, .result-box {
+      margin-top: 22px;
+      padding: 14px 16px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
     .progress {
       margin-top: 20px;
       font-size: 14px;
       color: #475569;
     }
 
-    .example {
-      margin-top: 18px;
-      padding: 12px 14px;
-      background: #f8fafc;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      font-size: 14px;
+    .radio-group {
+      margin-top: 10px;
+      line-height: 1.9;
+    }
+
+    .hidden {
+      display: none;
     }
 
     code {
       background: #eff6ff;
       padding: 2px 5px;
       border-radius: 4px;
+    }
+
+    .small {
+      font-size: 14px;
+      color: #475569;
     }
   </style>
 </head>
@@ -130,7 +148,7 @@
     <div class="card">
       <h1>Java Lern-Tool</h1>
       <div class="intro">
-        Wähle eine Aufgabe aus und arbeite dich mit <strong>Nächster Schritt</strong> durch die Hilfestufen.
+        Wähle eine Aufgabe aus, arbeite dich mit <strong>Nächster Schritt</strong> durch die Hilfestufen und reflektiere danach deinen Lernprozess.
       </div>
 
       <div class="selector">
@@ -160,6 +178,27 @@
       <div class="progress" id="progressText">
         Aktueller Stand: 0 von 5 Hilfestufen sichtbar
       </div>
+
+      <div class="evaluation">
+        <h2>Selbsteinschätzung</h2>
+        <div class="small">Wie gut konntest du die Aufgabe selbst lösen?</div>
+
+        <div class="radio-group">
+          <label><input type="radio" name="selfRating" value="selbstständig"> Ich konnte sie selbstständig lösen.</label><br>
+          <label><input type="radio" name="selfRating" value="wenig_hilfe"> Ich brauchte nur wenig Hilfe.</label><br>
+          <label><input type="radio" name="selfRating" value="mehrere_hinweise"> Ich brauchte mehrere Hinweise.</label><br>
+          <label><input type="radio" name="selfRating" value="musterlösung"> Ich brauchte die Musterlösung.</label>
+        </div>
+
+        <br>
+        <label for="reflection"><strong>Reflexion:</strong></label><br><br>
+        <textarea id="reflection" placeholder="Was war schwierig? Was hast du verstanden? Was möchtest du noch üben?"></textarea>
+
+        <br><br>
+        <button onclick="evaluateLearning()">Auswertung anzeigen</button>
+      </div>
+
+      <div id="resultBox" class="result-box hidden"></div>
     </div>
   </div>
 
@@ -230,6 +269,7 @@
 
     let currentTask = "max";
     let currentStep = 0;
+    let usedHints = 0;
     const maxSteps = 5;
 
     function renderTask() {
@@ -249,6 +289,10 @@
       document.getElementById("step5").className = "step solution";
 
       currentStep = 0;
+      usedHints = 0;
+      document.getElementById("reflection").value = "";
+      clearRating();
+      hideResult();
       updateProgress();
     }
 
@@ -260,6 +304,7 @@
     function nextStep() {
       if (currentStep < maxSteps) {
         currentStep++;
+        usedHints++;
         document.getElementById("step" + currentStep).style.display = "block";
         updateProgress();
       }
@@ -270,12 +315,85 @@
         document.getElementById("step" + i).style.display = "none";
       }
       currentStep = 0;
+      usedHints = 0;
+      clearRating();
+      document.getElementById("reflection").value = "";
+      hideResult();
       updateProgress();
     }
 
     function updateProgress() {
       document.getElementById("progressText").textContent =
         "Aktueller Stand: " + currentStep + " von 5 Hilfestufen sichtbar";
+    }
+
+    function getSelectedRating() {
+      const ratings = document.getElementsByName("selfRating");
+      for (let i = 0; i < ratings.length; i++) {
+        if (ratings[i].checked) {
+          return ratings[i].value;
+        }
+      }
+      return null;
+    }
+
+    function getRatingText(value) {
+      switch (value) {
+        case "selbstständig":
+          return "Ich konnte sie selbstständig lösen.";
+        case "wenig_hilfe":
+          return "Ich brauchte nur wenig Hilfe.";
+        case "mehrere_hinweise":
+          return "Ich brauchte mehrere Hinweise.";
+        case "musterlösung":
+          return "Ich brauchte die Musterlösung.";
+        default:
+          return "Keine Auswahl getroffen.";
+      }
+    }
+
+    function evaluateLearning() {
+      const rating = getSelectedRating();
+      const reflection = document.getElementById("reflection").value.trim();
+      const resultBox = document.getElementById("resultBox");
+
+      resultBox.classList.remove("hidden");
+
+      let feedback = "";
+
+      feedback += "<h2>Auswertung</h2>";
+      feedback += "<p><strong>Gewählte Aufgabe:</strong> " + document.getElementById("taskSelect").selectedOptions[0].text + "</p>";
+      feedback += "<p><strong>Genutzte Hilfestufen:</strong> " + usedHints + " von 5</p>";
+      feedback += "<p><strong>Selbsteinschätzung:</strong> " + getRatingText(rating) + "</p>";
+
+      if (reflection.length > 0) {
+        feedback += "<p><strong>Reflexion:</strong><br>" + reflection.replace(/\n/g, "<br>") + "</p>";
+      } else {
+        feedback += "<p><strong>Reflexion:</strong><br>Keine Reflexion eingetragen.</p>";
+      }
+
+      if (usedHints <= 1) {
+        feedback += "<p><strong>Rückmeldung:</strong> Sehr gut – du konntest die Aufgabe fast ohne Unterstützung bearbeiten.</p>";
+      } else if (usedHints <= 3) {
+        feedback += "<p><strong>Rückmeldung:</strong> Gut – du hast die Aufgabe mit gezielten Hinweisen bearbeitet.</p>";
+      } else {
+        feedback += "<p><strong>Rückmeldung:</strong> Die Aufgabe war noch anspruchsvoll. Das ist in Ordnung – die Hinweise helfen dir beim schrittweisen Aufbau des Verständnisses.</p>";
+      }
+
+      resultBox.innerHTML = feedback;
+    }
+
+    function clearRating() {
+      const ratings = document.getElementsByName("selfRating");
+      for (let i = 0; i < ratings.length; i++) {
+        ratings[i].checked = false;
+      }
+    }
+
+    function hideResult() {
+      const resultBox = document.getElementById("resultBox");
+      resultBox.classList.add("hidden");
+      resultBox.innerHTML = "";
     }
 
     renderTask();
