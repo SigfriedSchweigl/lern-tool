@@ -1,47 +1,175 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Lern-Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java Lern-Tool</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #1e293b;
+    }
+
+    .task {
+      background: #eef4ff;
+      border-left: 5px solid #2563eb;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .step {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin-top: 14px;
+    }
+
+    .hint {
+      background: #fff7d6;
+    }
+
+    .strategy {
+      background: #e0f2fe;
+    }
+
+    .code {
+      background: #f1f5f9;
+      font-family: Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    .solution {
+      background: #e8f7e8;
+      font-family: Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    .progress {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #475569;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div class="card">
+      <h1>Java Lern-Tool</h1>
 
-<h1>Java Lern-Tool</h1>
-<p>Aufgabe: Finde das Maximum in einem Array</p>
+      <div class="task">
+        <strong>Aufgabe:</strong><br>
+        Schreibe eine Methode <code>findMax(int[] numbers)</code>, die das größte Element in einem Array zurückgibt.
+      </div>
 
-<button onclick="showHint1()">Hinweis 1</button>
-<p id="hint1" style="display:none;">
-Starte mit einem Anfangswert!
-</p>
+      <div class="controls">
+        <button onclick="nextStep()">Nächster Schritt</button>
+        <button onclick="resetSteps()">Zurücksetzen</button>
+      </div>
 
-<button onclick="showHint2()">Hinweis 2</button>
-<p id="hint2" style="display:none;">
-Nutze eine Schleife!
-</p>
+      <div id="step1" class="step hint">
+        <strong>Denkhinweis:</strong><br>
+        Überlege, mit welchem Wert du den Vergleich beginnen kannst.
+      </div>
 
-<button onclick="showSolution()">Lösung anzeigen</button>
-<pre id="solution" style="display:none;">
+      <div id="step2" class="step strategy">
+        <strong>Strategie:</strong><br>
+        Speichere zuerst ein vorläufiges Maximum und gehe dann mit einer Schleife durch die restlichen Elemente.
+      </div>
+
+      <div id="step3" class="step code">
 int max = numbers[0];
+      </div>
+
+      <div id="step4" class="step code">
 for (int i = 1; i < numbers.length; i++) {
     if (numbers[i] > max) {
         max = numbers[i];
     }
 }
-</pre>
+      </div>
 
-<script>
-function showHint1() {
-  document.getElementById("hint1").style.display = "block";
+      <div id="step5" class="step solution">
+public static int findMax(int[] numbers) {
+    int max = numbers[0];
+    for (int i = 1; i < numbers.length; i++) {
+        if (numbers[i] > max) {
+            max = numbers[i];
+        }
+    }
+    return max;
 }
+      </div>
 
-function showHint2() {
-  document.getElementById("hint2").style.display = "block";
-}
+      <div class="progress" id="progressText">
+        Aktueller Stand: 0 von 5 Hilfestufen sichtbar
+      </div>
+    </div>
+  </div>
 
-function showSolution() {
-  document.getElementById("solution").style.display = "block";
-}
-</script>
+  <script>
+    let currentStep = 0;
+    const maxSteps = 5;
 
+    function nextStep() {
+      if (currentStep < maxSteps) {
+        currentStep++;
+        document.getElementById("step" + currentStep).style.display = "block";
+        updateProgress();
+      }
+    }
+
+    function resetSteps() {
+      for (let i = 1; i <= maxSteps; i++) {
+        document.getElementById("step" + i).style.display = "none";
+      }
+      currentStep = 0;
+      updateProgress();
+    }
+
+    function updateProgress() {
+      document.getElementById("progressText").textContent =
+        "Aktueller Stand: " + currentStep + " von 5 Hilfestufen sichtbar";
+    }
+  </script>
 </body>
 </html>
