@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lern-Tool</title>
+</head>
+<body>
+
+<h1>Java Lern-Tool</h1>
+<p>Aufgabe: Finde das Maximum in einem Array</p>
+
+<button onclick="showHint1()">Hinweis 1</button>
+<p id="hint1" style="display:none;">
+Starte mit einem Anfangswert!
+</p>
+
+<button onclick="showHint2()">Hinweis 2</button>
+<p id="hint2" style="display:none;">
+Nutze eine Schleife!
+</p>
+
+<button onclick="showSolution()">Lösung anzeigen</button>
+<pre id="solution" style="display:none;">
+int max = numbers[0];
+for (int i = 1; i < numbers.length; i++) {
+    if (numbers[i] > max) {
+        max = numbers[i];
+    }
+}
+</pre>
+
+<script>
+function showHint1() {
+  document.getElementById("hint1").style.display = "block";
+}
+
+function showHint2() {
+  document.getElementById("hint2").style.display = "block";
+}
+
+function showSolution() {
+  document.getElementById("solution").style.display = "block";
+}
+</script>
+
+</body>
+</html>
